@@ -30,7 +30,11 @@ function social_buttons_sharing_action_links( $links ) {
 }
 
 // Create a normal admin menu
-add_action('admin_menu', 'register_settings');
+if ( is_admin() ){ // admin actions
+  add_action('admin_menu', 'register_settings');
+  add_action( 'admin_init', 'social_buttons_sharing_register_settings' );
+}
+
 function register_settings() {
    add_options_page('Social Buttons Sharing Settings', 'Social Buttons Sharing Settings', 'manage_options', MY_PLUGIN_SLUG, 'social_buttons_sharing_settings_page');
 
@@ -49,30 +53,47 @@ function register_settings() {
     }
 }
 
-// Main plugin function
-add_action( 'admin_init', 'social_buttons_sharing_register_settings' );
+/**
+* Sanitize each setting field as needed
+*
+* @param array $input Contains all settings fields as array keys
+*/
+function sanitize( $input )
+{
+    $new_input = array();
+    if( isset( $input['social_buttons_sharing_option_fb'] ) )
+        $new_input['social_buttons_sharing_option_fb'] = sanitize_text_field( $input['social_buttons_sharing_option_fb'] );
+	
+    if( isset( $input['social_buttons_sharing_option_ig'] ) )
+        $new_input['social_buttons_sharing_option_ig'] = sanitize_text_field( $input['social_buttons_sharing_option_ig'] );	
+	
+    if( isset( $input['social_buttons_sharing_option_tw'] ) )
+        $new_input['social_buttons_sharing_option_tw'] = sanitize_text_field( $input['social_buttons_sharing_option_tw'] );
+
+    if( isset( $input['social_buttons_sharing_option_in'] ) )
+        $new_input['social_buttons_sharing_option_in'] = sanitize_text_field( $input['social_buttons_sharing_option_in'] );
+
+    if( isset( $input['social_buttons_sharing_option_gp'] ) )
+        $new_input['social_buttons_sharing_option_gp'] = sanitize_text_field( $input['social_buttons_sharing_option_gp'] );
+
+    if( isset( $input['social_buttons_sharing_option_size'] ) )
+        $new_input['social_buttons_sharing_option_size'] = sanitize_text_field( $input['social_buttons_sharing_option_size'] );
+
+    if( isset( $input['social_buttons_sharing_option_align'] ) )
+        $new_input['social_buttons_sharing_option_align'] = sanitize_text_field( $input['social_buttons_sharing_option_align'] );		
+
+        return $new_input;
+}
+
+// FUNCTION REGISTER SETTINGS
 function social_buttons_sharing_register_settings() {
-// Function Facebook   	
-   add_option('social_buttons_sharing_option_fb', 'This is URL Facebook FanPage');
-   register_setting('social_buttons_sharing_options_group', 'social_buttons_sharing_option_fb', 'social_buttons_sharing_callback'); 
-// Function Instagram   
-   add_option('social_buttons_sharing_option_ig', 'This is URL Instagram FanPage');
-   register_setting('social_buttons_sharing_options_group', 'social_buttons_sharing_option_ig', 'social_buttons_sharing_callback'); 
-// Function Twitter   
-   add_option('social_buttons_sharing_option_tw', 'This is URL Twitter FanPage');
-   register_setting('social_buttons_sharing_options_group', 'social_buttons_sharing_option_tw', 'social_buttons_sharing_callback'); 
- // Function Linkedin   
-   add_option('social_buttons_sharing_option_in', 'This is URL Linkedin FanPage');
-   register_setting('social_buttons_sharing_options_group', 'social_buttons_sharing_option_in', 'social_buttons_sharing_callback'); 
- // Function Google+   
-   add_option('social_buttons_sharing_option_gp', 'This is URL Google+ FanPage');
-   register_setting('social_buttons_sharing_options_group', 'social_buttons_sharing_option_gp', 'social_buttons_sharing_callback');   
-// Function Size  
-   add_option('social_buttons_sharing_option_size', 'This is SIZE social button icons');
-   register_setting('social_buttons_sharing_options_group', 'social_buttons_sharing_option_size', 'social_buttons_sharing_callback');  
-// Function Align   
-   add_option('social_buttons_sharing_option_align', 'This is Alignment social button icons');
-   register_setting('social_buttons_sharing_options_group', 'social_buttons_sharing_option_align', 'social_buttons_sharing_callback');    
+  register_setting( 'social_buttons_sharing_options_group', 'social_buttons_sharing_option_fb' );
+  register_setting( 'social_buttons_sharing_options_group', 'social_buttons_sharing_option_ig' );
+  register_setting( 'social_buttons_sharing_options_group', 'social_buttons_sharing_option_tw' );
+  register_setting( 'social_buttons_sharing_options_group', 'social_buttons_sharing_option_in' );
+  register_setting( 'social_buttons_sharing_options_group', 'social_buttons_sharing_option_gp' );
+  register_setting( 'social_buttons_sharing_options_group', 'social_buttons_sharing_option_size' );
+  register_setting( 'social_buttons_sharing_options_group', 'social_buttons_sharing_option_align' );   
 }
 
 // This is our plugins settings page
@@ -87,40 +108,40 @@ function social_buttons_sharing_settings_page() {
   <h2>Social Buttons Sharing URL</h2>
   <form method="post" action="options.php">
   <?php settings_fields('social_buttons_sharing_options_group'); ?>
-<div class="form-check">
+  <div class="form-check">
   <label class="form-check-label">Facebook:</label>
-    <input class="form-check-input" type="text" name="social_buttons_sharing_option_fb" id="facebook" value="<?php echo get_option('social_buttons_sharing_option_fb'); ?>">
-</div>
-<div class="form-check">
+    <input class="form-check-input" type="text" name="social_buttons_sharing_option_fb" id="facebook" value="<?php echo esc_attr( get_option('social_buttons_sharing_option_fb') ); ?>">
+  </div>
+  <div class="form-check">
   <label class="form-check-label">Instagram:</label>
-    <input class="form-check-input" type="text" name="social_buttons_sharing_option_ig" id="instagram" value="<?php echo get_option('social_buttons_sharing_option_ig'); ?>">
-</div>
-<div class="form-check">
+    <input class="form-check-input" type="text" name="social_buttons_sharing_option_ig" id="instagram" value="<?php echo esc_attr( get_option('social_buttons_sharing_option_ig') ); ?>">
+  </div>
+  <div class="form-check">
   <label class="form-check-label">Twitter:</label>
-    <input class="form-check-input" type="text" name="social_buttons_sharing_option_tw" id="twitter" value="<?php echo get_option('social_buttons_sharing_option_tw'); ?>">
-</div>
-<div class="form-check">
+    <input class="form-check-input" type="text" name="social_buttons_sharing_option_tw" id="twitter" value="<?php echo esc_attr( get_option('social_buttons_sharing_option_tw') ); ?>">
+  </div>
+  <div class="form-check">
   <label class="form-check-label">Linkedin:</label>
-    <input class="form-check-input" type="text" name="social_buttons_sharing_option_in" id="linkedin" value="<?php echo get_option('social_buttons_sharing_option_in'); ?>">
-</div>
-<div class="form-check">
+    <input class="form-check-input" type="text" name="social_buttons_sharing_option_in" id="linkedin" value="<?php echo esc_attr( get_option('social_buttons_sharing_option_in') ); ?>">
+  </div>
+  <div class="form-check">
   <label class="form-check-label">Google+:</label>
-    <input class="form-check-input" type="text" name="social_buttons_sharing_option_gp" id="google+" value="<?php echo get_option('social_buttons_sharing_option_gp'); ?>">
-</div>
-<div class="form-check">
+    <input class="form-check-input" type="text" name="social_buttons_sharing_option_gp" id="google+" value="<?php echo esc_attr( get_option('social_buttons_sharing_option_gp') ); ?>">
+  </div>
+  <div class="form-check">
   <label class="form-check-label">Size (px):</label>
-    <input class="form-check-input" type="text" name="social_buttons_sharing_option_size" id="size" placeholder="enter icon size only number" onfocus="this.placeholder = ''" onblur="this.placeholder = 'enter icon size only number'" value="<?php echo get_option('social_buttons_sharing_option_size'); ?>">
-</div>
-<div class="form-check">
+    <input class="form-check-input" type="text" name="social_buttons_sharing_option_size" id="size" placeholder="Enter icon size pixel (max size 256px)" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Enter icon size pixel (max size 256px)'" value="<?php echo esc_attr( get_option('social_buttons_sharing_option_size') ); ?>">
+  </div>
+  <div class="form-check">
   <label class="form-check-label">Align:</label>
     <select class="form-check-select" name="social_buttons_sharing_option_align">
-	<?php $align = get_option('social_buttons_sharing_option_align'); ?>
+	<?php $align = esc_attr( get_option('social_buttons_sharing_option_align') ); ?>
     <option value="<?php echo $align; ?>" selected><?php echo $align; ?></option>
 	<?php if ($align != "left"){ ?><option value="left">left</option><?php } ?>
 	<?php if ($align != "center"){ ?><option value="center">center</option><?php } ?>
 	<?php if ($align != "right"){ ?><option value="right">right</option><?php } ?>	
     </select>
-</div>
+  </div>
 			  
   <?php submit_button(); ?>
   </form>
@@ -129,24 +150,24 @@ function social_buttons_sharing_settings_page() {
 }
 
 // Main pubblic plugin function
+add_shortcode('show_social_buttons', 'social_buttons_share_show');
 function social_buttons_share_show() {
-	$facebook = get_option('social_buttons_sharing_option_fb');
-	$instagram = get_option('social_buttons_sharing_option_ig');
-	$twitter = get_option('social_buttons_sharing_option_tw');
-	$linkedin = get_option('social_buttons_sharing_option_in');
-	$google_plus = get_option('social_buttons_sharing_option_gp');	
+	$facebook = esc_attr(esc_url( get_option('social_buttons_sharing_option_fb') ) );
+	$instagram = esc_attr(esc_url( get_option('social_buttons_sharing_option_ig') ) );
+	$twitter = esc_attr(esc_url( get_option('social_buttons_sharing_option_tw') ) );
+	$linkedin = esc_attr(esc_url( get_option('social_buttons_sharing_option_in') ) );
+	$google_plus = esc_attr(esc_url( get_option('social_buttons_sharing_option_gp') ) );	
+	$size = esc_attr( get_option('social_buttons_sharing_option_size') );
 	
-	$size = get_option('social_buttons_sharing_option_size');
 	$size = preg_replace("/[^0-9]/", "",$size);
 	if ($size == ""){ $size = "50"; }
 	
-	$align = get_option('social_buttons_sharing_option_align');
-	
-	$fb_ico = plugins_url('/ico/fb.png', __FILE__);
-	$ig_ico = plugins_url('/ico/ig.png', __FILE__);
-	$tw_ico = plugins_url('/ico/tw.png', __FILE__);
-	$in_ico = plugins_url('/ico/in.png', __FILE__);
-	$gp_ico = plugins_url('/ico/gp.png', __FILE__);
+	$align = esc_attr( get_option('social_buttons_sharing_option_align') );
+	$fb_ico = esc_url(plugins_url('/ico/fb.png', __FILE__));
+	$ig_ico = esc_url(plugins_url('/ico/ig.png', __FILE__));
+	$tw_ico = esc_url(plugins_url('/ico/tw.png', __FILE__));
+	$in_ico = esc_url(plugins_url('/ico/in.png', __FILE__));
+	$gp_ico = esc_url(plugins_url('/ico/gp.png', __FILE__));	
 	
 	$content = "";
 	$content .= "<div align='$align'>";
@@ -158,5 +179,5 @@ function social_buttons_share_show() {
 	$content .= "</div>";
     return $content;		
 } 
-add_shortcode('show_social_buttons', 'social_buttons_share_show');
+
 ?>

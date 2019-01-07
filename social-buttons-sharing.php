@@ -138,6 +138,8 @@ function social_buttons_share_show() {
 	
 	$size = get_option('social_buttons_sharing_option_size');
 	$size = preg_replace("/[^0-9]/", "",$size);
+	if ($size == ""){ $size = "50"; }
+	
 	$align = get_option('social_buttons_sharing_option_align');
 	
 	$fb_ico = plugins_url('/ico/fb.png', __FILE__);
